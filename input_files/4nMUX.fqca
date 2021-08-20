@@ -1,0 +1,99 @@
+[ Arboreally stackable 4MUX. ]
+
+= = = = = = =
+
+
+
+a   b   c   d              
+
+
+= = = = = = =
+
+
+
+2   2   2   2 
+
+
+= = = = = = =
+    0 S 0 0
+  1 1     1 1
+2   2   2   2
+3 - 3   3 - 3
+4   4   4   4
+4 4 p + p 4 4
+= = = = = = =
+
+
+
+
+
+    5   5
+= = = = = = =
+
+
+    1   1 
+    5   5
+    5   5
+    5   5
+= = = = = = =
+
+
+    1   1  
+
+
+
+= = = = = = =
+      s 0
+    1   1
+    2 - 2
+    2   2
+      3
+    +   o
+= = = = = = =
+
+$
+
+p:
+- propagate
+- clock = 5
+
+s:
+- input
+- label = "SEL"
+- number = 0
+- clock = 0
+
+S:
+- input
+- label = "SEL"
+- number = 1
+- clock = 0
+
+a:
+- input
+- label = "I"
+- number = 0
+- clock = 2
+
+b:
+- input
+- label = "I"
+- number = 1
+- clock = 2
+
+c:
+- input
+- label = "I"
+- number = 2
+- clock = 2
+
+d:
+- input
+- label = "I"
+- number = 3
+- clock = 2
+
+o:
+- output
+- label = "OUT"
+- clock = 3

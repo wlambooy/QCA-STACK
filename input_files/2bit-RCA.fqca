@@ -1,0 +1,126 @@
+[ Linearly stackable 2-bit RCA. Stack with t = (2,2). ]
+
+= = = = = = =
+      c
+      0
+      1
+a 0 1 1 1 1 1
+      1
+      0
+      b
+= = = = = = =
+      0
+  
+
+  0         1
+      
+
+      0
+= = = = = = =
+      0
+      0
+    0 1
+  0 1 s     1
+    0 1
+      0
+      0
+= = = = = = =
+       
+  
+
+            1
+      
+
+       
+= = = = = = =
+      C
+      2
+      2
+A 1 2 2 2 1 1
+      2
+      1
+      B
+= = = = = = =
+      2
+  
+
+1           1
+      
+      1
+      
+= = = = = = =
+      2
+      
+      
+1 1 2 S 2 1 1
+    1 2 1
+      1
+       
+= = = = = = =
+      2
+  
+
+            
+      
+
+       
+= = = = = = =
+      2
+  
+
+            
+      
+
+       
+= = = = = = =
+
+$
+
+c:
+- input
+- label = "Cin"
+- clock = 0
+- propagate
+
+a:
+- input
+- label = "A"
+- clock = 0
+- number = 0
+
+A:
+- input
+- label = "A"
+- clock = 1
+- number = 1
+
+b:
+- input
+- label = "B"
+- clock = 0
+- number = 0
+
+B:
+- input
+- label  = "B"
+- clock  = 1
+- number = 1
+
+s:
+- output
+- label = "SUM"
+- clock = 1
+- number = 0
+
+S:
+- output
+- label = "SUM"
+- clock = 2
+- number = 1
+
+C:
+- output
+- label = "Cout"
+- clock = 2
+- number = 1
+- propagate

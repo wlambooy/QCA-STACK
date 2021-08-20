@@ -1,0 +1,98 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.33.0.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: 269cd4a5fc35266a968d6e5c732fc4b0770288d3988e9b5934ce036e07bd3faa
+
+name:           QCA-STACK
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/wlambooy/QCA-STACK#readme>
+homepage:       https://github.com/wlambooy/QCA-STACK#readme
+bug-reports:    https://github.com/wlambooy/QCA-STACK/issues
+author:         Willem Lambooy
+maintainer:     willem.lambooij@ru.nl
+copyright:      2021 Willem Lambooy
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    ChangeLog.md
+
+source-repository head
+  type: git
+  location: https://github.com/wlambooy/QCA-STACK
+
+library
+  exposed-modules:
+      BistableEngine.Engine
+      BistableEngine.Input
+      BistableEngine.IO
+      BistableEngine.Run
+      BistableEngine.State
+      Calculator
+      Cell.Cell
+      Cell.Charge
+      Cell.Phase
+      Design.ANDOR
+      Design.RCA
+      DesignTools
+      InputFile
+  other-modules:
+      Paths_QCA_STACK
+  hs-source-dirs:
+      src
+  build-depends:
+      ParserFunction >=0.1.0
+    , base >=4.7 && <5
+    , containers >=0.6.2.1
+    , matrix >=0.3
+    , mtl >=2.2.2
+    , parsec >=3.1.14.0
+    , split >=0.2.3.4
+    , timeit >=2.0
+    , vector >=0.12
+  default-language: Haskell2010
+
+executable QCA-STACK-exe
+  main-is: Main.hs
+  other-modules:
+      Paths_QCA_STACK
+  hs-source-dirs:
+      app
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      ParserFunction >=0.1.0
+    , QCA-STACK
+    , base >=4.7 && <5
+    , containers >=0.6.2.1
+    , matrix >=0.3
+    , mtl >=2.2.2
+    , parsec >=3.1.14.0
+    , split >=0.2.3.4
+    , timeit >=2.0
+    , vector >=0.12
+  default-language: Haskell2010
+
+test-suite QCA-STACK-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_QCA_STACK
+  hs-source-dirs:
+      test
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      ParserFunction >=0.1.0
+    , QCA-STACK
+    , base >=4.7 && <5
+    , containers >=0.6.2.1
+    , matrix >=0.3
+    , mtl >=2.2.2
+    , parsec >=3.1.14.0
+    , split >=0.2.3.4
+    , timeit >=2.0
+    , vector >=0.12
+  default-language: Haskell2010
