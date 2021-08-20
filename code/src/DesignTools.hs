@@ -30,7 +30,7 @@ negativeCell = defaultCell { pol = toDouble Negative , phase = const Hold }
 getInputs :: [Cell] -> [Cell]
 getInputs = sortBy ( ( . number ) . compare . number  ) . filter isInput
 
-
+-- | Thesis V1.1 - Section 4.2.3
 stackDesign :: Int -> (Int,Int) -> [Cell] -> [Cell]
 stackDesign n (a,b) ce = map ( \c -> if not ( propagate c && isOutput c ) then c
                                      else c { isOutput = False , propagate = False , label = "" } ) ce
@@ -48,6 +48,8 @@ stackNTimes 0 _ = id
 stackNTimes n t = stackDesign ( 2 ^ ( n - 1 ) ) t . stackNTimes ( n - 1 ) t
 
 
+
+-- | Thesis V1.1 - Section 4.4.2 >>
 stackTreeDesign :: Int -> [Cell] -> [Cell]
 stackTreeDesign 0 ce = ce
 stackTreeDesign n ce = inps ce ++ ( (++) . filter ( not . propagate ) <*> ( \(w,m) -> w ++ root m ce )
@@ -151,3 +153,4 @@ setClockPhases (ins,outs) minY ce = let (newCE,maxClockDiff) = foldr ( \i ->
                                                         else defaultCell { loc = (x,y,z)
                                                                          , phase = outClock } : cs
                                    ) [] . zip ( repeat ox ) $ reverse [ minY .. oy ] ) ) outs
+-- | <<

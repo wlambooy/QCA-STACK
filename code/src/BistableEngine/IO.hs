@@ -17,6 +17,7 @@ prettyPrint = foldr ( \( (t,s) , outCells ) xs -> do
     xs ) ( pure () )
 
 
+-- | Thesis V1.1 - Section 3.3.2 >>
 makeOutputGroups :: Int -> [Cell] -> [[Cell]]
 makeOutputGroups _ [] = []
 makeOutputGroups maxNum outs = ( case makeOutputGroup (-1) outs of [] -> makeOutputGroup 0 outs ; xs -> xs )
@@ -49,6 +50,7 @@ prettyPrintIO i = foldr ( \(inCells,outCells) xs -> do
     putStrLn $ foldr ( (++) . show ) "\n" ( sort outCells )
     xs ) ( putStrLn " ============" ) . zipIO i . parseOutput
   where zipIO a b = if length b > length a then zipIO a ( tail b ) else zip a b
+-- | <<
 
 
 lineBreak :: (Int,Int) -> String

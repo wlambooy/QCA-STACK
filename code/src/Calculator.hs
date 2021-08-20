@@ -24,6 +24,9 @@ import BistableEngine.Input
 import BistableEngine.IO
 
 
+-- | Thesis V1.1 - Section 4.2.4
+
+
 toBinary :: Int -> [Int]
 toBinary = \case 0 -> [0] ; n -> toBinHelp n
   where toBinHelp = \case 0 -> [] ; n -> toBinHelp ( n `div` 2 ) ++ if even n then [0] else [1]
@@ -66,12 +69,14 @@ calculate i ce = parseExpr >>= ( \case
     Left str  -> if str == "exit" then pure () else calculate i ce
     Right inp -> ( timeIt . print $ getOutput i inp ) >> calculate i ce ) . ( numsToInput ce <$> )
     
+-- Visual
 calculateCE :: Integer -> [Cell] -> IO ()
 calculateCE i ce = parseExpr >>= ( \case
     Left str  -> if str == "exit" then pure () else calculateCE i ce
     Right inp -> runSimVisual i ( const [ fst inp ] ) ( snd inp )
                  >> ( timeIt . print $ getOutput i inp ) >> calculateCE i ce ) . ( numsToInput ce <$> )
-                 
+    
+-- Pretty-print             
 calculateIO :: Integer -> [Cell] -> IO ()
 calculateIO i ce = parseExpr >>= ( \case
     Left str  -> if str == "exit" then pure () else calculateIO i ce

@@ -10,6 +10,7 @@ import Control.Monad.State
 import Data.List ( sort , sortBy , find )
 
 
+-- Thesis V1.1 - Section 3.1.2
 data SimState = SS { cellEnv   :: [Cell]
                    , time      :: Time
                    , stability :: Stability
@@ -55,6 +56,7 @@ incrTime :: State SimState Time
 incrTime = modify ( \st -> st { time = time st + 1 } ) >> gets time
 
 
+-- | Thesis V1.1 - Section 3.2.2
 nextPhase :: State SimState Time
 nextPhase = incrTime >>= (<$) <*> setHoldPols
 
@@ -74,14 +76,14 @@ setHoldPols :: Time -> State SimState ()
 setHoldPols t = modify $ \st -> st { cellEnv = map ( \c -> if phase c t /= Hold then c
                                                            else c { pol = signum $ pol c } ) $ cellEnv st }
 
-
-getUndefPolCells :: State SimState [Cell]
-getUndefPolCells = gets $ \st -> filter ( \c -> abs ( pol c ) < 0.05 && phase c ( time st ) == Switch ) $ cellEnv st
+-- | Thesis V1.1 - Section 3.2.1
+getDubiousCells :: State SimState [Cell]
+getDubiousCells = gets $ \st -> filter ( \c -> abs ( pol c ) < 0.05 && phase c ( time st ) == Switch ) $ cellEnv st
 
 setStability :: Stability -> State SimState ()
 setStability s = modify $ \st -> st { stability = s }
 
-
+-- | Thesis V1.1 - Section 3.2.2 
 addOutputs :: State SimState ()
 addOutputs = modify $ \st -> st { outputs = ( ( time st , stability st )
                                             , filter isOutput $ cellEnv st ) : outputs st }
@@ -94,6 +96,7 @@ setCache :: Cell -> Cell -> Double -> State SimState ()
 setCache c1 c2 ke = modify $ \st -> st { kinkCache = M.insert ( min c1 c2 , max c1 c2 ) ke $ kinkCache st }
 
 
+-- | Thesis V1.1 - Section 3.1.3 (last paragraph)
 sortOnPropagation :: State SimState ()
 sortOnPropagation = get >>= \st ->
      let env = cellEnv st ; t = time st
@@ -118,5 +121,6 @@ lastOutput = get >>= \st -> let (n,b) = finishLog st in if b
            Just c  -> ( number c == getMaxOutputNum ( cellEnv st ) ) <$ put st { finishLog = ( number c , True ) } 
     else nInputsEmpty 2 >>= ( False <$ ) . flip when ( put st { finishLog = (n,True) } )
 
+-- | Thesis V1.1 - Section 3.3.1
 isFinished :: State SimState Bool
 isFinished = nInputsEmpty 1 >>= \case True -> lastOutput ; False -> pure False

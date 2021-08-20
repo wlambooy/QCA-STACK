@@ -11,6 +11,9 @@ import Control.Monad.State
 import Data.List ( groupBy , sortBy )
 
 
+-- | Thesis V1.1 - Section 3.2.3
+
+
 truthTable :: [Cell] -> [Input]
 truthTable [] = [[]]
 truthTable (c:cs) = [ t:ts | t <- truth c , ts <- truthTable cs ]

@@ -18,6 +18,7 @@ type Input = [(Cell,Charge)]
 type Output = [ ( (Time,Stability) , [Cell] ) ]
 
 
+-- | Thesis V1.1 - Section 3.1.2
 data Cell = Cell { loc       :: Pos                    -- Absolute location of the cell on the grid
                  , label     :: String                 -- Label used for printing the cell
                  , pol       :: Double                 -- Polarity of the cell
@@ -84,6 +85,7 @@ sortOnZ = ( . getZ ) . compare . getZ
 sortOnY = ( . getY ) . compare . getY
 sortOnX = ( . getX ) . compare . getX
 
+-- | Thesis V1.1 - Section 4.1.2
 xyzFactor :: Floating a => [a]
 --xyzFactor = [1,1,0.581214566722247681924037319514494021827]
 xyzFactor = [1,1,0.581215]

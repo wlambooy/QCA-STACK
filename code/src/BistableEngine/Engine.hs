@@ -20,8 +20,7 @@ convergenceTolerance :: Double
 convergenceTolerance = 1e-8
 
 
---calcKinkEnergy c1 c2 = sum . toList . flatten . mapPos ( \(_,cl1) a -> mapPos ( \(_,cl2) b -> ( 1 / ) $
---        fromIntegral ( ( -2 * cl1 + 3 ) * ( 2 * cl2 - 3 ) ) * absQDotDistance a b ) ( getQDots c2 ) ) $ getQDots c1
+-- | Thesis V1.1 - Section 3.1.1
 calcKinkEnergy :: Cell -> Cell -> Double
 calcKinkEnergy c1 c2 = sum . toList . flatten .
     mapPos ( \(_,col1) a ->
@@ -34,44 +33,39 @@ calcKinkEnergy c1 c2 = sum . toList . flatten .
 getOrCalcKE :: Cell -> Cell -> State SimState Double
 getOrCalcKE c1 c2 = checkCache c1 c2 >>= maybe ( (<$) <*> setCache c1 c2 $ calcKinkEnergy c1 c2 ) pure
 
-
+-- | Thesis V1.1 - Section 3.1.2 >>
 getNeighbours :: Cell -> State SimState [Cell]
 getNeighbours cell = gets $ filter ( \c -> absCellDistance cell c < radiusOfEffect && c /= cell ) . cellEnv
-
-
---polarisationMath :: Cell -> State SimState Double
---polarisationMath c = getNeighbours c >>= ( fmap . ( sum . ) . zipWith (*) . map pol ) <*> mapM ( getOrCalcKE c )
---newPolarisation :: Cell -> State SimState Double
---newPolarisation = fmap ( \x -> x / sqrt ( 1 + x ** 2 ) ) . polarisationMath
 
 newPolarisation :: Cell -> State SimState Double
 newPolarisation c = ( \x -> x / sqrt ( 1 + x ** 2 ) ) . sum . 
   ( ( zipWith (*) . map pol ) <*> map ( calcKinkEnergy c ) )
   <$> getNeighbours c
+-- | <<
   
 
+-- | Thesis V1.1 - Section 3.2.1 >>
 tick :: Time -> Cell -> State SimState ()
 tick t c
  | ( phase c t == Hold && pol c /= 0 ) || isInput c || phase c t == Relax = pure ()
  |   phase c t == Release = setPol c 0
--- | otherwise = newPolarisation c >>= \newPol -> setPol c newPol
---               >> when ( abs ( newPol - pol c ) > convergenceTolerance ) ( setStability False )
---               >> when ( phase c t == Hold ) ( setPol c $ signum newPol )
-  | otherwise = newPolarisation c >>= \newPol ->
-                when ( abs ( newPol - pol c ) > convergenceTolerance ) ( setStability False )
-                >> setPol c ( if phase c t == Hold then signum newPol else newPol )
+ | otherwise = newPolarisation c >>= \newPol ->
+               when ( abs ( newPol - pol c ) > convergenceTolerance ) ( setStability False )
+               >> setPol c ( if phase c t == Hold then signum newPol else newPol )
 
 tickAll :: State SimState Stability
 tickAll = get >>= \st -> foldr ( (>>) . tick ( time st ) ) ( gets stability ) $ cellEnv st
 
 doIterations :: Integer -> State SimState [Cell]
-doIterations 0 = getUndefPolCells
+doIterations 0 = getDubiousCells
 doIterations n = setStability True >> sortOnPropagation >> tickAll >>= \case
-    True  -> getUndefPolCells
+    True  -> getDubiousCells
     False -> doIterations $ n - 1
+-- | <<
 
-handleUndefPols :: Integer -> [Cell] -> State SimState ()
-handleUndefPols maxIters uds = unless ( null uds ) $ do
+-- | Thesis V1.1 - Section 3.1.3
+handleDubiousCells :: Integer -> [Cell] -> State SimState ()
+handleDubiousCells maxIters uds = unless ( null uds ) $ do
     ce <- gets cellEnv
     modify $ \st -> st { cellEnv = filter ( `notElem` uds ) ce }
     t <- nextPhase          
