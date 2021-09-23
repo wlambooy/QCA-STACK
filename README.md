@@ -6,7 +6,7 @@ QCA-STACK is a QCA design and simulation system written in Haskell. The system s
 ## Instructions on setting up with Jetbrains IntelliJ IDEA
 1. [Install Haskell Stack](https://docs.haskellstack.org/en/stable/install_and_upgrade/).
 2. [Install Jetbrains IntelliJ IDEA](https://www.jetbrains.com/idea/download/) and [install the plugin IntelliJ-Haskell](https://github.com/rikvdkleij/intellij-haskell#installing-the-plugin). The latter link has detailed instruction on running a stack project in IntelliJ. Consult this if the following steps do not work for you.
-    - *NB:* At the moment of writing the current version of IntelliJ-Haskell is 1.0.0-beta87. This version gives an error when you want to create a run configuration, though version 1.0.0-beta85 does not.
+    - *NB:* At the moment of writing the current version of IntelliJ-Haskell is 1.0.0-beta87. This version gives an error when you want to create a run configuration, though version 1.0.0-beta85 does not. This older version breaks IntelliJ version 2021.2.2 (the latest version at the time of writing) however, so you will need to downgrade it to version 2020.3.4.
 4. Clone this repository or make sure you have the `code` folder and its contents on your file system.
 5. Open the aforementioned folder in IntelliJ with the following steps (the steps could depend on your IntelliJ version):
     - Import project, select the `code` directory.
