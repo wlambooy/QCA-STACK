@@ -47,8 +47,8 @@ newPolarisation c = ( \x -> x / sqrt ( 1 + x ** 2 ) ) . sum .
 -- | Thesis V1.1 - Section 3.2.1 >>
 tick :: Time -> Cell -> State SimState ()
 tick t c
- | ( phase c t == Hold && pol c /= 0 ) || isInput c || phase c t == Relax = pure ()
- |   phase c t == Release = setPol c 0
+ | ( phase c t == Hold && pol c /= 0 ) || isInput c || phase c t == Release = pure ()
+ |   phase c t == Relax = setPol c 0
  | otherwise = newPolarisation c >>= \newPol ->
                when ( abs ( newPol - pol c ) > convergenceTolerance ) ( setStability False )
                >> setPol c ( if phase c t == Hold then signum newPol else newPol )

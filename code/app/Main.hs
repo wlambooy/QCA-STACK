@@ -1,3 +1,5 @@
+{-# LANGUAGE LambdaCase #-}
+
 module Main where
 
   
@@ -35,14 +37,44 @@ testCE ce = do
     runSimNPhases i p ( take t . drop d . truthTable ) ce
     testCE ce
 
+loadCE :: IO [Cell]
+loadCE = do
+    hSetBuffering stdout NoBuffering
+    putStr "input file: "
+    x <- getLine
+    parseFile x >>= \case
+      Left a   -> print a >> loadCE
+      Right ce -> do
+        putStr "stack linearly n times: "
+        n <- ( read :: String -> Int ) <$> getLine
+        if n == 0 then (>>) . showCEClocks <*> return $ ce else do
+           putStr "clock offset: "
+           a <- ( read :: String -> Int ) <$> getLine
+           putStr "number offset: "
+           b <- ( read :: String -> Int ) <$> getLine
+           (>>) . showCEClocks <*> return $ stackNTimes n (a,b) ce
+
+runTT :: [Cell] -> IO ()
+runTT ce = do
+    hSetBuffering stdout NoBuffering
+    putStr "Run truth table?: "
+    getLine >>= \case
+      "y" -> do
+        putStr "iterations: "
+        i <- ( read :: String -> Integer ) <$> getLine
+        runSimPretty i truthTable ce
+      _   -> return ()
+
 main :: IO ()
 main = do
-    hSetBuffering stdout NoBuffering
-    putStrLn "::   calculator with RCA v1   |   type \"exit\" to quit   ::"
-    putStr "iterations: "
-    i <- getLine
-    if i == "exit" then return ()
-    else calculate ( ( read :: String -> Integer ) i ) rcaCellEnv
+    loadCE >>= ( (>>) . runTT ) <*> testCE
+
+--    hSetBuffering stdout NoBuffering
+--    putStrLn "::   calculator with RCA v1   |   type \"exit\" to quit   ::"
+--    putStr "iterations: "
+--    i <- getLine
+--    if i == "exit" then return ()
+--    else calculate ( ( read :: String -> Integer ) i ) rcaCellEnv
 
 --    ( Right ce ) <- parseFile "..\\input_files\\4nMUX.fqca"
 --    let aa = stackTreeDesign 1 ce

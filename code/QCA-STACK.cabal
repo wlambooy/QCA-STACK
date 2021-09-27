@@ -1,8 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.34.4.
+-- This file has been generated from package.yaml by hpack version 0.33.0.
 --
 -- see: https://github.com/sol/hpack
+--
+-- hash: 99a16c0e463a508b20f014235ebe3cf39d637b6f526cb6b8ba190af0d355dc1e
 
 name:           QCA-STACK
 version:        0.1.0.0
