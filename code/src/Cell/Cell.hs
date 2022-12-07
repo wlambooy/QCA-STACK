@@ -53,15 +53,15 @@ instance Ord Cell where
 
 
 instance Show Cell where
-  show c = identAndSpacer c ++ if pol c /= ( fromInteger . round . pol ) c then show ( pol c )
+  show c = identAndSpacer c ++ if ( /= ) <*> fromInteger . round $ pol c then show ( pol c )
                                else show ( round ( pol c ) :: Integer )
 
 showLabel :: Cell -> String
 showLabel c = label c ++ if number c < 0 || propagate c then "" else ( show . number ) c
 
 identAndSpacer :: Cell -> String
-identAndSpacer c = let (locOrLbl,t) = if null ( label c ) then ( show ( loc c ) , 20 ) else ( showLabel c , 12 )
-                       t'           = if pol c < 0        then t - 1                   else t
+identAndSpacer c = let (locOrLbl,t) = if null $ label c then ( show ( loc c ) , 20 ) else ( showLabel c , 12 )
+                       t'           = if pol c < 0      then t - 1                   else t
                    in "\n " ++ locOrLbl ++ ":" ++ replicate ( t' - length locOrLbl - 2 ) ' '
 
 

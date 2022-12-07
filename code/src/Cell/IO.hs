@@ -1,6 +1,6 @@
 {-# LANGUAGE LambdaCase #-}
 
-module BistableEngine.IO where
+module Cell.IO where
 
 import Cell.Cell
 import Cell.Phase
@@ -88,7 +88,8 @@ cellEnvToString showClocks t ce = let (minX,maxX) = xBounds ce ; (minY,maxY) = y
                       | otherwise = "0;32m"
                     co = if phase c t == Hold then "1;37m" else "0;37m"
                 in case signum ( pol c ) of -1 -> cm ++ "-" ; 0 -> co ++ "o" ; 1 -> cp ++ "+" ; _ -> ""
-    showClock c = show . ( `mod` 4 ) . ( 3 - ) . fromEnum $ phase c t
+    showClock c = if phase c t == phase c ( t + 1 ) then showPol c 
+                  else show . ( `mod` 4 ) . ( 3 - ) . fromEnum $ phase c t
 
 showCellEnv :: Time -> [Cell] -> IO ()
 showCellEnv t = putStrLn . fst . cellEnvToString False t

@@ -17,7 +17,8 @@ radiusOfEffect :: Double
 radiusOfEffect = 5.0
 
 convergenceTolerance :: Double
-convergenceTolerance = 1e-8
+--convergenceTolerance = 1e-8
+convergenceTolerance = 1e-6
 
 
 -- | Thesis V1.1 - Section 3.1.1

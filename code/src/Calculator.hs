@@ -20,8 +20,8 @@ import Cell.Charge
 
 import BistableEngine.State
 import BistableEngine.Run
-import BistableEngine.Input
-import BistableEngine.IO
+import Cell.Input
+import Cell.IO
 
 
 -- | Thesis V1.1 - Section 4.2.4
@@ -46,7 +46,7 @@ numsToInput cs ns = let (as,bs) = join bimap ( addLeadingZeroes . toBinary ) ns
                                     in if la == lb then (as,bs)
                                        else ( if la < lb then first
                                               else second ) ( replicate ( abs ( la - lb ) ) 0 ++ ) (as,bs)
-                        ce = stackNTimes ( maximum [ 0 , popCount ( length as' - 1 ) - 1 ] ) (2,2) cs
+                        ce = linStackNTimes ( maximum [ 0 , popCount ( length as' - 1 ) - 1 ] ) (2,2) cs
                         inps = sort $ filter isInput ce
                         inpsA = zip ( filter ( ( == "A" ) . label ) inps ) ( binaryToCharge as' )
                         inpsB = zip ( filter ( ( == "B" ) . label ) inps ) ( binaryToCharge bs' )
@@ -68,6 +68,9 @@ calculate :: Integer -> [Cell] -> IO ()
 calculate i ce = parseExpr >>= ( \case
     Left str  -> if str == "exit" then pure () else calculate i ce
     Right inp -> ( timeIt . print $ getOutput i inp ) >> calculate i ce ) . ( numsToInput ce <$> )
+    
+calculateBenchmark :: Integer -> [Cell] -> IO ()
+calculateBenchmark i ce = timeIt . print $ getOutput i ( numsToInput ce (12345,56789) )
     
 -- Visual
 calculateCE :: Integer -> [Cell] -> IO ()

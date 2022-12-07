@@ -1,4 +1,4 @@
-module InputFile where
+module InputFile.IFtoCE where
 
 import Cell.Cell
 import Cell.Phase

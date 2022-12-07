@@ -5,7 +5,7 @@ module BistableEngine.State where
 import Cell.Cell
 import Cell.Phase
 
-import qualified Data.Map as M
+import qualified Data.Map.Strict as M
 import Control.Monad.State
 import Data.List ( sort , sortBy , find )
 
@@ -87,6 +87,7 @@ setStability s = modify $ \st -> st { stability = s }
 addOutputs :: State SimState ()
 addOutputs = modify $ \st -> st { outputs = ( ( time st , stability st )
                                             , filter isOutput $ cellEnv st ) : outputs st }
+
 
 
 checkCache :: Cell -> Cell -> State SimState ( Maybe Double )

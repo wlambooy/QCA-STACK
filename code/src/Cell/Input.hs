@@ -1,6 +1,6 @@
 {-# LANGUAGE LambdaCase , TupleSections #-}
 
-module BistableEngine.Input where
+module Cell.Input where
 
 import Cell.Cell
 import Cell.Charge
@@ -25,7 +25,6 @@ parseInputs inCells = map rmvDummies . groupBy eqPhase .
                                        sortBy cmpPhase . 
                           addDummies . concat . ( map (,Neutral) ( offsetBuf inCells ) : )
   where
---    offsetInputs = dropWhile ( ( /= Switch ) . flip phase 0 ) . dropWhile ( ( == Switch ) . flip phase 0 )
     offsetInputs = dropWhile ( \c -> phase c 0 /= Switch ) . dropWhile ( \c -> phase c 0 == Switch )
     offsetBuf = \case [] -> [] ; inps -> (++) <*> offsetBuf $ offsetInputs inps
     eqPhase  =        ( . ( flip phase 0 . fst ) ) . (==)    . flip phase 0 . fst

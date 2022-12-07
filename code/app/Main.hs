@@ -4,11 +4,11 @@ module Main where
 
   
 import Calculator
-import InputFile
+import InputFile.IFtoCE
 
-import BistableEngine.Input
+import Cell.Input
 import BistableEngine.Run
-import BistableEngine.IO
+import Cell.IO
 
 import DesignTools
 import Design.RCA
@@ -34,7 +34,7 @@ testCE ce = do
 --    o <- getLine
 --    let outFile = "path" ++ o ++ ".txt"
 --    runSimNPhasesWrite outFile i p ( take t . drop d . truthTable ) ce
-    runSimNPhases i p ( take t . drop d . truthTable ) ce
+    runSimNPhasesCE i p ( take t . drop d . truthTable ) ce
     testCE ce
 
 loadCE :: IO [Cell]
@@ -47,12 +47,17 @@ loadCE = do
       Right ce -> do
         putStr "stack linearly n times: "
         n <- ( read :: String -> Int ) <$> getLine
-        if n == 0 then (>>) . showCEClocks <*> return $ ce else do
-           putStr "clock offset: "
-           a <- ( read :: String -> Int ) <$> getLine
-           putStr "number offset: "
-           b <- ( read :: String -> Int ) <$> getLine
-           (>>) . showCEClocks <*> return $ stackNTimes n (a,b) ce
+        if n /= 0 then do
+          putStr "clock offset: "
+          a <- ( read :: String -> Int ) <$> getLine
+          putStr "number offset: "
+          b <- ( read :: String -> Int ) <$> getLine
+          (>>) . showCEClocks <*> return $ linStackNTimes n (a,b) ce
+        else do
+          putStr "stack arboreally n times: "
+          n2 <- ( read :: String -> Int ) <$> getLine
+          if n2 == 0 then (>>) . showCEClocks <*> return $ ce
+                     else let ce2 = arboStackNTimes n2 ce in print ( filter isInput ce2 ) >> getInfo ce2 >> return ce2 -- (>>) . getInfo <*> return $ arboStackNTimes n2 ce
 
 runTT :: [Cell] -> IO ()
 runTT ce = do
@@ -68,6 +73,13 @@ runTT ce = do
 main :: IO ()
 main = do
     loadCE >>= ( (>>) . runTT ) <*> testCE
+
+--      (Right ce) <- parseFile "/media/willem/DATA/Willem/Stack/_RU/BachelorThesis/Haskell/inputfiles/test/8TreeMUXv2.fqca"
+--      hSetBuffering stdout NoBuffering
+--      putStrLn "start"
+--      timeIt . print $ runSimNPhases 100 4095 truthTable ce
+
+--    calculateBenchmark 60 rcaCellEnv
 
 --    hSetBuffering stdout NoBuffering
 --    putStrLn "::   calculator with RCA v1   |   type \"exit\" to quit   ::"
