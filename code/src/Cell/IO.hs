@@ -1,6 +1,6 @@
 {-# LANGUAGE LambdaCase #-}
 
-module BistableEngine.IO where
+module Cell.IO where
 
 import Cell.Cell
 import Cell.Phase
@@ -78,11 +78,18 @@ cellEnvToString showClocks t ce = let (minX,maxX) = xBounds ce ; (minY,maxY) = y
     xBounds = ( (,) . getX . minimumBy sortOnX ) <*> ( getX . maximumBy sortOnX )
     yBounds = ( (,) . getY . minimumBy sortOnY ) <*> ( getY . maximumBy sortOnY )
     showPol c = "\ESC[" ++ ( if isInput c || isOutput c then "4;" else "" ) ++
-                let cm = if phase c t == Hold then "1;91m" else "0;31m"
+                let cm
+                      | phase c t == Hold = "1;91m"
+                      | phase c t == Release = "0;37m"
+                      | otherwise = "0;31m"
+                    cp
+                      | phase c t == Hold = "1;92m"
+                      | phase c t == Release = "0;37m"
+                      | otherwise = "0;32m"
                     co = if phase c t == Hold then "1;37m" else "0;37m"
-                    cp = if phase c t == Hold then "1;92m" else "0;32m"
                 in case signum ( pol c ) of -1 -> cm ++ "-" ; 0 -> co ++ "o" ; 1 -> cp ++ "+" ; _ -> ""
-    showClock c = show . ( `mod` 4 ) . ( 3 - ) . fromEnum $ phase c t
+    showClock c = if phase c t == phase c ( t + 1 ) then showPol c 
+                  else show . ( `mod` 4 ) . ( 3 - ) . fromEnum $ phase c t
 
 showCellEnv :: Time -> [Cell] -> IO ()
 showCellEnv t = putStrLn . fst . cellEnvToString False t

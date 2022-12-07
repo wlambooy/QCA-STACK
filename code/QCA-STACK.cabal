@@ -1,8 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.34.4.
+-- This file has been generated from package.yaml by hpack version 0.33.0.
 --
 -- see: https://github.com/sol/hpack
+--
+-- hash: 951479981fa5066e8450a8160a43cda0f3b962894c120b5a4969f25970258286
 
 name:           QCA-STACK
 version:        0.1.0.0
@@ -25,18 +27,19 @@ source-repository head
 library
   exposed-modules:
       BistableEngine.Engine
-      BistableEngine.Input
-      BistableEngine.IO
       BistableEngine.Run
       BistableEngine.State
       Calculator
       Cell.Cell
       Cell.Charge
+      Cell.Input
+      Cell.IO
       Cell.Phase
       Design.ANDOR
       Design.RCA
       DesignTools
-      InputFile
+      InputFile.CEtoIF
+      InputFile.IFtoCE
   other-modules:
       Paths_QCA_STACK
   hs-source-dirs:

@@ -13,6 +13,7 @@ import Control.Monad
 import Data.Bifunctor ( bimap , first )
 import Control.Arrow ( (***) )
 
+
 inputCell , outputCell :: Cell
 inputCell  = defaultCell { isInput  = True }
 outputCell = defaultCell { isOutput = True }
@@ -30,9 +31,27 @@ negativeCell = defaultCell { pol = toDouble Negative , phase = const Hold }
 getInputs :: [Cell] -> [Cell]
 getInputs = sortBy ( ( . number ) . compare . number  ) . filter isInput
 
+getInfo :: [Cell] -> IO ()
+getInfo ce = do
+    putStr "\nx,y,z: "
+    print ( getRanges ce )
+    putStr "nCells: "
+    print ( length ce )
+    putStr "Layout area in cells: "
+    print ( getXRange ce * getYRange ce )
+    putStr "layout volume in cells: "
+    print ( getXRange ce * getYRange ce * getZRange ce )
+    putStr "Physical area in nm² (18nm cells with 2nm spacers): "
+    print ( ( getXRange ce * 20 - 2 ) * ( getYRange ce * 20 - 2 ) )
+  where
+    getRange f = (-) . ( + 1 ) . maximum . map f <*> minimum . map f
+    getXRange = getRange getX ; getYRange = getRange getY ; getZRange = getRange getZ
+    getRanges = liftM2 (,,) getXRange getYRange <*> getZRange
+
+
 -- | Thesis V1.1 - Section 4.2.3
-stackDesign :: Int -> (Int,Int) -> [Cell] -> [Cell]
-stackDesign n (a,b) ce = map ( \c -> if not ( propagate c && isOutput c ) then c
+stackLinDesign :: Int -> (Int,Int) -> [Cell] -> [Cell]
+stackLinDesign n (a,b) ce = map ( \c -> if not ( propagate c && isOutput c ) then c
                                      else c { isOutput = False , propagate = False , label = "" } ) ce
                       ++ mapMaybe ( \c -> let num = number c
                                               c'  = c { loc   = posMath (+) (0,0,maxHeight) $ loc c
@@ -43,16 +62,20 @@ stackDesign n (a,b) ce = map ( \c -> if not ( propagate c && isOutput c ) then c
                                                          else c' { number = num + ( b * n ) } ) ce
   where maxHeight = maximum $ map getZ ce
 
-stackNTimes :: Int -> (Int,Int) -> [Cell] -> [Cell]
-stackNTimes 0 _ = id
-stackNTimes n t = stackDesign ( 2 ^ ( n - 1 ) ) t . stackNTimes ( n - 1 ) t
+linStackNTimes :: Int -> (Int,Int) -> [Cell] -> [Cell]
+linStackNTimes 0 _ = id
+linStackNTimes n t = stackLinDesign ( 2 ^ ( n - 1 ) ) t . linStackNTimes ( n - 1 ) t
 
 
 
 -- | Thesis V1.1 - Section 4.4.2 >>
-stackTreeDesign :: Int -> [Cell] -> [Cell]
-stackTreeDesign 0 ce = ce
-stackTreeDesign n ce = inps ce ++ ( (++) . filter ( not . propagate ) <*> ( \(w,m) -> w ++ root m ce )
+arboStackNTimes :: Int -> [Cell] -> [Cell]
+arboStackNTimes 0 = id
+arboStackNTimes n = stackArboDesign n . arboStackNTimes ( n - 1 )
+
+stackArboDesign :: Int -> [Cell] -> [Cell]  -- only tested on MUX
+stackArboDesign 0 ce = ce
+stackArboDesign n ce = inps ce ++ ( (++) . filter ( not . propagate ) <*> ( \(w,m) -> w ++ root m ce )
                                   . wires ( getNonSelInps ce ) . map ( \c -> c { propagate = False } )
                                   . filter propagate ) ( newLeaf ce )
   where

@@ -10,8 +10,8 @@ import DesignTools
 
 import BistableEngine.State
 import BistableEngine.Engine
-import BistableEngine.Input
-import BistableEngine.IO
+import Cell.Input
+import Cell.IO
 
 import Control.Monad.State
 
@@ -51,6 +51,12 @@ runSimVisual maxIters inputGen ce = putStrLn $ evalState ( simulatePrintCE maxIt
                                                    inputs  = parseInputs <*> inputGen $ getInputs ce }
 
 
+simulateN :: Integer -> Time -> State SimState ()
+simulateN maxIters t = setInputCells >>
+                    doIterations maxIters >>= handleDubiousCells maxIters >>
+                               addOutputs >> get >>= \st ->
+                                  unless ( time st >= t ) ( nextPhase >> simulateN maxIters ( t - 1 ) )
+
 simulateNPrintCE :: Integer -> Time -> State SimState String
 simulateNPrintCE maxIters t = setInputCells >>
                     doIterations maxIters >>= handleDubiousCells maxIters >>
@@ -62,8 +68,14 @@ simulateNPrintCE maxIters t = setInputCells >>
                                   else nextPhase
                                        >> ( ( ceWithTime ++ lineBreak dims ) ++ ) <$> simulateNPrintCE maxIters t
 
-runSimNPhases :: Integer -> Integer -> ( [Cell] -> [Input] ) -> [Cell] -> IO ()
-runSimNPhases maxIters t inputGen ce = putStrLn $ evalState ( simulateNPrintCE maxIters t )
+
+runSimNPhases :: Integer -> Integer -> ( [Cell] -> [Input] ) -> [Cell] -> Output
+runSimNPhases maxIters t inputGen ce = outputs $ execState ( simulateN maxIters t )
+                                       defaultState { cellEnv = ce ,
+                                                      inputs  = parseInputs <*> inputGen $ getInputs ce }
+                                                      
+runSimNPhasesCE :: Integer -> Integer -> ( [Cell] -> [Input] ) -> [Cell] -> IO ()
+runSimNPhasesCE maxIters t inputGen ce = putStrLn $ evalState ( simulateNPrintCE maxIters t )
                                        defaultState { cellEnv = ce ,
                                                       inputs  = parseInputs <*> inputGen $ getInputs ce }
 

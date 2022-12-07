@@ -5,7 +5,7 @@ module BistableEngine.State where
 import Cell.Cell
 import Cell.Phase
 
-import qualified Data.Map as M
+import qualified Data.Map.Strict as M
 import Control.Monad.State
 import Data.List ( sort , sortBy , find )
 
@@ -89,6 +89,7 @@ addOutputs = modify $ \st -> st { outputs = ( ( time st , stability st )
                                             , filter isOutput $ cellEnv st ) : outputs st }
 
 
+
 checkCache :: Cell -> Cell -> State SimState ( Maybe Double )
 checkCache c1 c2 = gets $ M.lookup ( min c1 c2 , max c1 c2) . kinkCache
 
@@ -100,7 +101,7 @@ setCache c1 c2 ke = modify $ \st -> st { kinkCache = M.insert ( min c1 c2 , max 
 sortOnPropagation :: State SimState ()
 sortOnPropagation = get >>= \st ->
      let env = cellEnv st ; t = time st
-         hld = filter ( ( == Hold ) . flip phase t ) env
+         hld = filter ( \c -> phase c t == Hold && phase c ( t + 1 ) /= Hold ) env  -- ignore fixed polarisation cells
      in if null hld then pure ()
         else let swi = sortBy ( cmp hld ) $ filter ( ( == Switch ) . flip phase t ) env
              in put st { cellEnv = filter ( `notElem` swi ) env ++ swi }
